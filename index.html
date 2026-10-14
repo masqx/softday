@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#fff5f8">
+  <title>softday — твой планер</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar" aria-label="Главное меню">
+      <div class="brand"><span class="brand-mark">s.</span><span>softday</span></div>
+      <div class="side-caption">ТВОЁ ПРОСТРАНСТВО</div>
+      <nav class="nav-list">
+        <button class="nav-item active" data-page="calendar"><span class="nav-icon">▦</span>Календарь</button>
+        <button class="nav-item" data-page="today"><span class="nav-icon">♡</span>Мои дела</button>
+        <button class="nav-item" data-page="school"><span class="nav-icon">✎</span>Учёба</button>
+        <button class="nav-item" data-page="work"><span class="nav-icon">◷</span>График работы</button>
+        <button class="nav-item" data-page="savings"><span class="nav-icon">♧</span>Копилка</button>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="tiny-flower">✿</div>
+        <p>Не обязательно<br>успеть всё сразу.</p>
+        <span>маленькими шагами ♡</span>
+      </div>
+    </aside>
+    <div class="scrim" id="scrim"></div>
+    <main class="main">
+      <header class="topbar">
+        <button class="menu-toggle" id="menuToggle" aria-label="Открыть меню"><span></span><span></span></button>
+        <div class="top-brand"><span class="brand-mark">s.</span> softday</div>
+        <div class="top-date" id="topDate"></div>
+        <button class="avatar" title="Твоё пространство">♡</button>
+      </header>
+
+      <section class="page active" id="page-calendar">
+        <div class="welcome-row">
+          <div><p class="eyebrow">ТВОЙ МАЛЕНЬКИЙ УГОЛОК</p><h1>Всё по полочкам<span class="pink-dot">.</span></h1><p class="subhead">Планируй в своём темпе — у тебя получится.</p></div>
+          <div class="flower-art" aria-hidden="true">✿</div>
+        </div>
+        <div class="dashboard-grid">
+          <section class="panel calendar-panel">
+            <div class="panel-heading">
+              <div><p class="eyebrow">ТВОЙ ПЛАН</p><h2 id="monthLabel">Октябрь 2026</h2></div>
+              <div class="month-controls"><button id="prevMonth" aria-label="Предыдущий месяц">‹</button><button id="nextMonth" aria-label="Следующий месяц">›</button></div>
+            </div>
+            <div class="weekdays"><span>пн</span><span>вт</span><span>ср</span><span>чт</span><span>пт</span><span>сб</span><span>вс</span></div>
+            <div class="calendar-grid" id="calendarGrid"></div>
+            <div class="calendar-legend"><span><i class="dot dot-pink"></i> дела</span><span><i class="dot dot-lilac"></i> учёба</span><span><i class="dot dot-green"></i> работа</span></div>
+          </section>
+          <section class="panel day-panel">
+            <div class="panel-heading day-heading"><div><p class="eyebrow">ВЫБРАННЫЙ ДЕНЬ</p><h2 id="selectedDateLabel">Сегодня</h2></div><span class="day-heart">♡</span></div>
+            <div id="dayTasks" class="day-tasks"></div>
+            <form id="taskForm" class="quick-add"><input id="taskInput" type="text" placeholder="Добавить маленькое дело…" maxlength="90" aria-label="Новое дело"><button type="submit" aria-label="Добавить дело">+</button></form>
+            <p class="micro-note">Нажми на дату в календаре, чтобы посмотреть дела.</p>
+          </section>
+        </div>
+        <section class="bottom-strip">
+          <div class="strip-copy"><span class="strip-icon">♡</span><div><strong>Тебе не нужно быть идеальной</strong><p>Достаточно сделать следующий маленький шаг.</p></div></div>
+          <button class="text-button" data-goto="today">К моим делам <span>→</span></button>
+        </section>
+      </section>
+
+      <section class="page" id="page-today">
+        <div class="page-intro"><p class="eyebrow">СПОКОЙНО И ПО ПОРЯДКУ</p><h1>Мои дела<span class="pink-dot">.</span></h1><p class="subhead">Всё, что хочется не забыть.</p></div>
+        <section class="panel simple-panel"><div class="panel-heading"><div><p class="eyebrow">НА СЕГОДНЯ</p><h2 id="todayHeading">Маленький список</h2></div><span class="soft-pill" id="taskCount">0 дел</span></div><div id="allTasks" class="all-tasks"></div><form id="todayForm" class="quick-add"><input id="todayInput" placeholder="Что ещё нужно сделать?" maxlength="90" aria-label="Новое дело"><button type="submit">+</button></form></section>
+      </section>
+
+      <section class="page" id="page-school">
+        <div class="page-intro"><p class="eyebrow">УЧЁБА БЕЗ ПАНИКИ</p><h1>Учёба<span class="pink-dot">.</span></h1><p class="subhead">Домашка, дедлайны и маленькие победы.</p></div>
+        <section class="panel simple-panel"><div class="panel-heading"><div><p class="eyebrow">МОИ ЗАДАНИЯ</p><h2>Домашняя работа</h2></div><span class="soft-pill">демо</span></div><div id="schoolTasks" class="all-tasks"></div><form id="schoolForm" class="quick-add"><input id="schoolInput" placeholder="Например: химия — параграф 5" maxlength="100" aria-label="Новое задание"><button type="submit">+</button></form><p class="micro-note">Пока задания можно добавлять вручную. Загрузка скриншотов и распознавание ИИ — следующий этап.</p></section>
+      </section>
+
+      <section class="page" id="page-work">
+        <div class="page-intro"><p class="eyebrow">ТВОИ СМЕНЫ</p><h1>График работы<span class="pink-dot">.</span></h1><p class="subhead">Смены и заработок — в одном месте.</p></div>
+        <div class="stats-grid"><div class="panel stat-card"><span class="stat-label">Смен в этом месяце</span><strong id="shiftCount">0</strong><span class="stat-sub">запланировано</span></div><div class="panel stat-card"><span class="stat-label">Часы</span><strong id="hoursCount">0</strong><span class="stat-sub">по твоему графику</span></div><div class="panel stat-card"><span class="stat-label">Ожидаемый доход</span><strong id="incomeCount">0 ₽</strong><span class="stat-sub">примерный расчёт</span></div></div>
+        <section class="panel simple-panel"><div class="panel-heading"><div><p class="eyebrow">ДОБАВИТЬ В ГРАФИК</p><h2>Новая смена</h2></div></div><form id="shiftForm" class="shift-form"><label>Дата<input type="date" id="shiftDate" required></label><label>Часов<input type="number" id="shiftHours" min="1" max="16" value="5" required></label><label>Оплата за смену, ₽<input type="number" id="shiftPay" min="0" value="345" required></label><button class="primary-button" type="submit">Добавить смену</button></form><div id="shiftList" class="shift-list"></div><p class="micro-note">В прототипе можно поменять оплату на свою. Пока это простой расчёт, без разделения выплат по датам.</p></section>
+      </section>
+
+      <section class="page" id="page-savings">
+        <div class="page-intro"><p class="eyebrow">ПО ЧУТЬ-ЧУТЬ К ЦЕЛИ</p><h1>Копилка<span class="pink-dot">.</span></h1><p class="subhead">Твой план накоплений — без магии, только понятные шаги.</p></div>
+        <div class="savings-grid">
+          <section class="panel savings-main"><p class="eyebrow">МОЯ ЦЕЛЬ</p><h2 id="goalTitle">Большая мечта ♡</h2><div class="money-line"><strong id="savedBig">0 ₽</strong><span>из <span id="goalBig">100 000 ₽</span></span></div><div class="progress-track"><div id="progressFill" class="progress-fill"></div></div><div class="progress-foot"><span id="progressText">0% накоплено</span><span id="leftText">Осталось 100 000 ₽</span></div><div class="saving-plan"><div><span>Откладывать в неделю</span><strong id="weeklySave">—</strong></div><div><span>Смен в неделю примерно</span><strong id="weeklyShifts">—</strong></div></div></section>
+          <section class="panel goal-settings"><p class="eyebrow">НАСТРОИТЬ КОПИЛКУ</p><h2>Под твой темп</h2><label>Название цели<input id="goalName" value="Большая мечта ♡" maxlength="50"></label><label>Сколько нужно, ₽<input id="goalAmount" type="number" min="1" value="100000"></label><label>Уже накоплено, ₽<input id="savedAmount" type="number" min="0" value="22000"></label><label>Хочу накопить к дате<input id="goalDate" type="date"></label><label>Могу откладывать от смены, ₽<input id="savePerShift" type="number" min="0" value="250"></label><button id="saveSettings" class="primary-button">Пересчитать план</button><p class="micro-note">Суммы 100 000 ₽ и 22 000 ₽ — только пример. Замени их на свои реальные значения.</p></section>
+        </div>
+        <section class="panel add-money-panel"><div><p class="eyebrow">ПОПОЛНЕНИЕ</p><h2>Добавить в копилку</h2></div><form id="depositForm" class="quick-add"><input id="depositInput" type="number" min="1" placeholder="Сумма, ₽" aria-label="Сумма пополнения" required><button type="submit">+</button></form></section>
+      </section>
+
+      <footer class="footer-note">softday <span>·</span> твой день, твой темп <span>♡</span></footer>
+    </main>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
