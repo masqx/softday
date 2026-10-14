@@ -1,0 +1,25 @@
+/* Типы смен и добавление смены прямо из календаря */
+.shift-type-form{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;gap:12px;align-items:end}
+.shift-type-form label,.calendar-shift-form label{display:grid;gap:8px;color:#9f8d98;font-size:10px;font-weight:700}
+.shift-type-form input,.calendar-shift-form input,.calendar-shift-form select{width:100%;min-width:0;border:1px solid var(--line);border-radius:11px;padding:12px;background:#fff;color:var(--ink);font:500 12px Manrope,sans-serif;outline:none;box-sizing:border-box}
+.shift-type-list{display:grid;gap:8px;margin-top:16px}
+.shift-type-row,.day-shift-row{display:flex;align-items:center;gap:11px;padding:12px 13px;background:#fff9fb;border:1px solid var(--line);border-radius:12px;font-size:11px}
+.shift-type-icon{color:var(--pink-dark);font-size:19px}
+.shift-type-name,.day-shift-row>span:nth-child(2){display:grid;gap:4px;flex:1;min-width:0}
+.shift-type-name small,.day-shift-row small,.shift-row small{display:block;color:#ad9ca7;font-size:10px;margin-top:4px}
+.shift-type-row button,.day-shift-row button{border:0;background:transparent;color:#c7b2bd;cursor:pointer;font-size:18px}
+.shift-list-heading{margin-top:28px;margin-bottom:10px}
+.calendar-shift-actions{margin-top:14px}
+.calendar-shift-actions>.primary-button{width:100%}
+.calendar-shift-form{display:grid;gap:11px;margin-top:12px;padding:13px;background:#fff9fb;border:1px solid var(--line);border-radius:14px}
+.calendar-shift-form[hidden]{display:none}
+.day-shifts{display:grid;gap:7px;margin-top:9px}
+.day-shift-row{padding:10px;font-size:10px}
+.day-shift-row>.dot{flex:0 0 6px}
+.shift-row>span:nth-child(2){min-width:0}
+@media(max-width:700px){
+ .shift-type-form{grid-template-columns:minmax(0,1fr)}
+ .shift-type-form .primary-button{width:100%}
+ .shift-row{gap:8px;padding:11px 9px}
+ .shift-row strong{white-space:nowrap}
+}
