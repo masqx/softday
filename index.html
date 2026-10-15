@@ -35,16 +35,15 @@
             <div class="panel-heading"><div><p class="eyebrow">ТВОЙ ПЛАН</p><h2 id="monthLabel">Октябрь 2026</h2></div><div class="month-controls"><button id="prevMonth" aria-label="Предыдущий месяц">‹</button><button id="nextMonth" aria-label="Следующий месяц">›</button></div></div>
             <div class="weekdays"><span>пн</span><span>вт</span><span>ср</span><span>чт</span><span>пт</span><span>сб</span><span>вс</span></div>
             <div class="calendar-grid" id="calendarGrid"></div>
-            <div class="calendar-legend"><span><i class="legend-swatch legend-pink"></i> дела и события</span><span><i class="legend-swatch legend-rose"></i> учёба</span><span><i class="legend-swatch legend-blush"></i> работа</span></div>
+            <div class="calendar-legend"><span><i class="dot dot-pink"></i> дела</span><span><i class="dot dot-lilac"></i> учёба</span><span><i class="dot dot-green"></i> работа</span></div>
           </section>
           <section class="panel day-panel">
             <div class="panel-heading day-heading"><div><p class="eyebrow">ВЫБРАННЫЙ ДЕНЬ</p><h2 id="selectedDateLabel">Сегодня</h2></div><span class="day-heart">♡</span></div>
             <div id="dayTasks" class="day-tasks"></div>
-            <form id="taskForm" class="quick-add event-quick-add"><input id="taskInput" type="text" placeholder="Новое событие или дело…" maxlength="90" aria-label="Новое событие или дело"><label class="time-field"><span>Начало</span><input id="taskTime" type="time" aria-label="Время начала события"></label><button type="submit" aria-label="Добавить событие">+</button></form>
+            <form id="taskForm" class="quick-add"><input id="taskInput" type="text" placeholder="Добавить маленькое дело…" maxlength="90" aria-label="Новое дело"><button type="submit" aria-label="Добавить дело">+</button></form>
             <div class="calendar-shift-actions"><button type="button" id="showCalendarShiftForm" class="primary-button">＋ Добавить смену</button>
               <form id="calendarShiftForm" class="calendar-shift-form" hidden>
                 <label>Какая смена<select id="calendarShiftType" required></select></label>
-                <label>Начало смены<input id="calendarShiftTime" type="time" value="09:00" required></label>
                 <label>Часов<input id="calendarShiftHours" type="number" min="1" max="16" value="5" required></label>
                 <button type="submit" class="primary-button">Сохранить смену на этот день</button>
               </form>
@@ -56,7 +55,7 @@
       </section>
       <section class="page" id="page-today">
         <div class="page-intro"><p class="eyebrow">СПОКОЙНО И ПО ПОРЯДКУ</p><h1>Мои дела<span class="pink-dot">.</span></h1><p class="subhead">Всё, что хочется не забыть.</p></div>
-        <section class="panel simple-panel"><div class="panel-heading"><div><p class="eyebrow">НА СЕГОДНЯ</p><h2 id="todayHeading">Маленький список</h2></div><span class="soft-pill" id="taskCount">0 дел</span></div><div id="allTasks" class="all-tasks"></div><form id="todayForm" class="quick-add event-quick-add"><input id="todayInput" placeholder="Что ещё нужно сделать?" maxlength="90" aria-label="Новое дело"><label class="time-field"><span>Начало</span><input id="todayTime" type="time" aria-label="Время начала дела"></label><button type="submit">+</button></form></section>
+        <section class="panel simple-panel"><div class="panel-heading"><div><p class="eyebrow">НА СЕГОДНЯ</p><h2 id="todayHeading">Маленький список</h2></div><span class="soft-pill" id="taskCount">0 дел</span></div><div id="allTasks" class="all-tasks"></div><form id="todayForm" class="quick-add"><input id="todayInput" placeholder="Что ещё нужно сделать?" maxlength="90" aria-label="Новое дело"><button type="submit">+</button></form></section>
       </section>
       <section class="page" id="page-school">
         <div class="page-intro"><p class="eyebrow">УЧЁБА БЕЗ ПАНИКИ</p><h1>Учёба<span class="pink-dot">.</span></h1><p class="subhead">Домашка, дедлайны и маленькие победы.</p></div>
