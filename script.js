@@ -6,6 +6,7 @@ const iso = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-$
 const fmtMoney = n => new Intl.NumberFormat("ru-RU",{maximumFractionDigits:0}).format(Math.round(Number(n)||0))+" ₽";
 const monthNames = ["Январь","Февраль","Март","Апрель","Май","Июнь","Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"];
 const weekdayFmt = new Intl.DateTimeFormat("ru-RU",{day:"numeric",month:"long"});
+function formatTime(value){if(!value)return "Весь день";const m=String(value).match(/^(\d{1,2}):(\d{2})$/);if(!m)return value;let h=Number(m[1]);const suffix=h>=12?"PM":"AM";h=h%12||12;return `${h}:${m[2]} ${suffix}`;}
 let data = load();
 let viewDate = new Date(today.getFullYear(),today.getMonth(),1);
 let selectedDate = iso(today);
@@ -17,14 +18,24 @@ function defaultData(){return {tasks:[
 function load(){try{const d=JSON.parse(localStorage.getItem(STORE))||defaultData();d.shiftTypes ||= [];d.shifts ||= [];return d}catch{return defaultData()}}
 function persist(){localStorage.setItem(STORE,JSON.stringify(data))}
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
-function taskMarkup(t){return `<div class="task-row ${t.done?"done":""}" data-task="${t.id}"><input class="task-check" type="checkbox" ${t.done?"checked":""} aria-label="Отметить выполненным"><span class="task-text">${escapeHtml(t.text)}</span><button class="delete-task" aria-label="Удалить дело">×</button></div>`}
+function taskMarkup(t){return `<div class="task-row ${t.done?"done":""}" data-task="${t.id}"><input class="task-check" type="checkbox" ${t.done?"checked":""} aria-label="Отметить выполненным"><span class="task-copy"><span class="task-text">${escapeHtml(t.text)}</span>${t.time?`<small class="task-time">${formatTime(t.time)}</small>`:""}</span><button class="delete-task" aria-label="Удалить дело">×</button></div>`}
 function renderTasks(container,items,empty){container.innerHTML=items.length?items.map(taskMarkup).join(""):`<div class="empty-state">${empty}</div>`;container.querySelectorAll(".task-row").forEach(row=>{let id=Number(row.dataset.task);row.querySelector(".task-check").addEventListener("change",e=>{let t=data.tasks.find(x=>x.id===id);if(t)t.done=e.target.checked;persist();renderAll()});row.querySelector(".delete-task").addEventListener("click",()=>{data.tasks=data.tasks.filter(x=>x.id!==id);persist();renderAll()})})}
-function addTask(text,type="task",date=selectedDate){text=text.trim();if(!text)return;data.tasks.push({id:Date.now()+Math.floor(Math.random()*1000),date,text,type,done:false});persist();renderAll()}
+function addTask(text,type="task",date=selectedDate,time=""){text=text.trim();if(!text)return;data.tasks.push({id:Date.now()+Math.floor(Math.random()*1000),date,text,type,time,done:false});persist();renderAll()}
 function renderCalendar(){
  $("#monthLabel").textContent=monthNames[viewDate.getMonth()]+" "+viewDate.getFullYear();
  const first=new Date(viewDate.getFullYear(),viewDate.getMonth(),1),offset=(first.getDay()+6)%7,start=new Date(first);start.setDate(first.getDate()-offset);
  const grid=$("#calendarGrid");grid.innerHTML="";
- for(let i=0;i<42;i++){const d=new Date(start);d.setDate(start.getDate()+i);const key=iso(d),inMonth=d.getMonth()===viewDate.getMonth(),tasks=data.tasks.filter(t=>t.date===key),hasShift=data.shifts.some(s=>s.date===key);const cell=document.createElement("button");cell.type="button";cell.className="calendar-cell"+(!inMonth?" muted":"")+(key===selectedDate?" selected":"")+(key===iso(today)?" today":"");cell.innerHTML=`<span>${d.getDate()}</span><span class="day-dots">${tasks.some(t=>t.type==="task")?'<i class="dot dot-pink"></i>':""}${tasks.some(t=>t.type==="school")?'<i class="dot dot-lilac"></i>':""}${(tasks.some(t=>t.type==="work")||hasShift)?'<i class="dot dot-green"></i>':""}</span>`;cell.addEventListener("click",()=>{selectedDate=key;if(!inMonth)viewDate=new Date(d.getFullYear(),d.getMonth(),1);renderAll()});grid.appendChild(cell)}
+ for(let i=0;i<42;i++){
+  const d=new Date(start);d.setDate(start.getDate()+i);const key=iso(d),inMonth=d.getMonth()===viewDate.getMonth();
+  const tasks=data.tasks.filter(t=>t.date===key).slice().sort((a,b)=>(a.time||"99:99").localeCompare(b.time||"99:99"));
+  const shifts=data.shifts.filter(s=>s.date===key).slice().sort((a,b)=>(a.startTime||"99:99").localeCompare(b.startTime||"99:99"));
+  const entries=[...tasks.map(t=>({kind:t.type==="school"?"school":"task",title:t.text,time:t.time||"",sort:t.time||"99:99"})),...shifts.map(s=>({kind:"work",title:s.name||"Смена",time:s.startTime||"",sort:s.startTime||"99:99"}))].sort((a,b)=>a.sort.localeCompare(b.sort));
+  const cell=document.createElement("button");cell.type="button";cell.className="calendar-cell"+(!inMonth?" muted":"")+(key===selectedDate?" selected":"")+(key===iso(today)?" today":"");
+  const blocks=entries.slice(0,3).map(e=>`<span class="calendar-event event-${e.kind}" title="${escapeHtml(e.title)}"><span class="calendar-event-title">${escapeHtml(e.title)}</span><span class="calendar-event-time">${formatTime(e.time)}</span></span>`).join("");
+  const more=entries.length>3?`<span class="calendar-more">+${entries.length-3} ещё</span>`:"";
+  cell.innerHTML=`<span class="calendar-day-number">${d.getDate()}</span><span class="calendar-events">${blocks}${more}</span>`;
+  cell.addEventListener("click",()=>{selectedDate=key;if(!inMonth)viewDate=new Date(d.getFullYear(),d.getMonth(),1);renderAll()});grid.appendChild(cell)
+ }
 }
 function renderSelectedDay(){
  const d=new Date(selectedDate+"T12:00:00");$("#selectedDateLabel").textContent=selectedDate===iso(today)?"Сегодня":weekdayFmt.format(d);
@@ -33,7 +44,7 @@ function renderSelectedDay(){
  const show=$("#showCalendarShiftForm");show.textContent="＋ Добавить смену";
  renderCalendarShiftOptions();
  const shifts=data.shifts.filter(s=>s.date===selectedDate);
- if(shifts.length){const wrap=document.createElement("div");wrap.className="day-shifts";wrap.innerHTML=shifts.map(s=>`<div class="day-shift-row"><span class="dot dot-green"></span><span><strong>${escapeHtml(s.name||"Смена")}</strong><small>${s.hours} ч · ${fmtMoney(s.rate ?? (Number(s.pay)/Math.max(1,Number(s.hours))))}/ч</small></span><strong>${fmtMoney(s.pay)}</strong><button type="button" data-remove-calendar-shift="${s.id}" aria-label="Удалить смену">×</button></div>`).join("");$("#dayTasks").appendChild(wrap);wrap.querySelectorAll("[data-remove-calendar-shift]").forEach(b=>b.addEventListener("click",()=>{data.shifts=data.shifts.filter(x=>x.id!==Number(b.dataset.removeCalendarShift));persist();renderAll()}))}
+ if(shifts.length){const wrap=document.createElement("div");wrap.className="day-shifts";wrap.innerHTML=shifts.map(s=>`<div class="day-shift-row"><span class="day-shift-swatch"></span><span><strong>${escapeHtml(s.name||"Смена")}</strong><small>${formatTime(s.startTime)} · ${s.hours} ч</small></span><strong>${fmtMoney(s.pay)}</strong><button type="button" data-remove-calendar-shift="${s.id}" aria-label="Удалить смену">×</button></div>`).join("");$("#dayTasks").appendChild(wrap);wrap.querySelectorAll("[data-remove-calendar-shift]").forEach(b=>b.addEventListener("click",()=>{data.shifts=data.shifts.filter(x=>x.id!==Number(b.dataset.removeCalendarShift));persist();renderAll()}))}
 }
 function renderCalendarShiftOptions(){
  const select=$("#calendarShiftType");
@@ -50,7 +61,7 @@ function renderWork(){
  const month=String(viewDate.getMonth()+1).padStart(2,"0"),year=viewDate.getFullYear();
  const shifts=data.shifts.filter(s=>s.date.startsWith(`${year}-${month}`));
  $("#shiftCount").textContent=shifts.length;$("#hoursCount").textContent=shifts.reduce((n,s)=>n+Number(s.hours),0);$("#incomeCount").textContent=fmtMoney(shifts.reduce((n,s)=>n+Number(s.pay),0));
- $("#shiftList").innerHTML=data.shifts.length?data.shifts.slice().sort((a,b)=>a.date.localeCompare(b.date)).map(s=>`<div class="shift-row"><span>◷</span><span><strong>${escapeHtml(s.name||"Смена")}</strong><small>${new Date(s.date+"T12:00:00").toLocaleDateString("ru-RU",{day:"numeric",month:"short"})} · ${s.hours} ч × ${fmtMoney(s.rate ?? (Number(s.pay)/Math.max(1,Number(s.hours))))}/ч</small></span><strong>${fmtMoney(s.pay)}</strong><button data-shift="${s.id}" aria-label="Удалить смену">×</button></div>`).join(""):'<div class="empty-state">Пока смен нет — выбери дату в календаре и добавь смену.</div>';
+ $("#shiftList").innerHTML=data.shifts.length?data.shifts.slice().sort((a,b)=>a.date.localeCompare(b.date)).map(s=>`<div class="shift-row"><span class="shift-row-swatch"></span><span><strong>${escapeHtml(s.name||"Смена")}</strong><small>${new Date(s.date+"T12:00:00").toLocaleDateString("ru-RU",{day:"numeric",month:"short"})} · ${formatTime(s.startTime)} · ${s.hours} ч × ${fmtMoney(s.rate ?? (Number(s.pay)/Math.max(1,Number(s.hours))))}/ч</small></span><strong>${fmtMoney(s.pay)}</strong><button data-shift="${s.id}" aria-label="Удалить смену">×</button></div>`).join(""):'<div class="empty-state">Пока смен нет — выбери дату в календаре и добавь смену.</div>';
  $$("[data-shift]").forEach(b=>b.addEventListener("click",()=>{data.shifts=data.shifts.filter(s=>s.id!==Number(b.dataset.shift));persist();renderAll()}));
  renderShiftTypes();
 }
@@ -65,12 +76,12 @@ $("#scrim").addEventListener("click",closeMenu);
 $("#prevMonth").addEventListener("click",()=>{viewDate.setMonth(viewDate.getMonth()-1);renderCalendar()});
 $("#nextMonth").addEventListener("click",()=>{viewDate.setMonth(viewDate.getMonth()+1);renderCalendar()});
 let touchX=0;$("#calendarGrid").addEventListener("touchstart",e=>{touchX=e.changedTouches[0].screenX},{passive:true});$("#calendarGrid").addEventListener("touchend",e=>{const dx=e.changedTouches[0].screenX-touchX;if(Math.abs(dx)>65){viewDate.setMonth(viewDate.getMonth()+(dx<0?1:-1));renderCalendar()}},{passive:true});
-$("#taskForm").addEventListener("submit",e=>{e.preventDefault();addTask($("#taskInput").value);$("#taskInput").value=""});
-$("#todayForm").addEventListener("submit",e=>{e.preventDefault();addTask($("#todayInput").value);$("#todayInput").value=""});
+$("#taskForm").addEventListener("submit",e=>{e.preventDefault();addTask($("#taskInput").value,"task",selectedDate,$("#taskTime").value);$("#taskInput").value="";$("#taskTime").value=""});
+$("#todayForm").addEventListener("submit",e=>{e.preventDefault();addTask($("#todayInput").value,"task",iso(today),$("#todayTime").value);$("#todayInput").value="";$("#todayTime").value=""});
 $("#schoolForm").addEventListener("submit",e=>{e.preventDefault();addTask($("#schoolInput").value,"school",iso(today));$("#schoolInput").value=""});
 $("#shiftTypeForm").addEventListener("submit",e=>{e.preventDefault();const name=$("#shiftTypeName").value.trim(),rate=Number($("#shiftTypeRate").value);if(!name||rate<=0)return;data.shiftTypes.push({id:Date.now(),name,rate});persist();e.target.reset();renderAll()});
 $("#showCalendarShiftForm").addEventListener("click",()=>{if(!data.shiftTypes.length){switchPage("work");$("#shiftTypeName").focus();return}const form=$("#calendarShiftForm");form.hidden=!form.hidden;$("#showCalendarShiftForm").textContent=form.hidden?"＋ Добавить смену":"Скрыть форму";renderCalendarShiftOptions()});
-$("#calendarShiftForm").addEventListener("submit",e=>{e.preventDefault();const type=data.shiftTypes.find(t=>t.id===Number($("#calendarShiftType").value));const hours=Number($("#calendarShiftHours").value);if(!type||hours<1)return;data.shifts.push({id:Date.now(),typeId:type.id,name:type.name,rate:type.rate,date:selectedDate,hours,pay:hours*type.rate});persist();renderAll();$("#calendarShiftForm").hidden=true});
+$("#calendarShiftForm").addEventListener("submit",e=>{e.preventDefault();const type=data.shiftTypes.find(t=>t.id===Number($("#calendarShiftType").value));const hours=Number($("#calendarShiftHours").value);if(!type||hours<1)return;data.shifts.push({id:Date.now(),typeId:type.id,name:type.name,rate:type.rate,date:selectedDate,startTime:$("#calendarShiftTime").value||"09:00",hours,pay:hours*type.rate});persist();renderAll();$("#calendarShiftForm").hidden=true});
 $("#saveSettings").addEventListener("click",()=>{data.goal={name:$("#goalName").value.trim()||"Моя цель ♡",amount:Math.max(1,Number($("#goalAmount").value)||1),saved:Math.max(0,Number($("#savedAmount").value)||0),date:$("#goalDate").value||iso(new Date(today.getFullYear(),today.getMonth()+6,today.getDate())),savePerShift:Math.max(0,Number($("#savePerShift").value)||0)};persist();calculateSavings();$("#saveSettings").textContent="План обновлён ✓";setTimeout(()=>$("#saveSettings").textContent="Пересчитать план",1500)});
 $("#depositForm").addEventListener("submit",e=>{e.preventDefault();const n=Number($("#depositInput").value);if(n>0){data.goal.saved=Number(data.goal.saved||0)+n;$("#savedAmount").value=data.goal.saved;persist();calculateSavings();$("#depositInput").value=""}});
 let edgeStart=null;document.addEventListener("touchstart",e=>{if(e.touches[0].clientX<22)edgeStart=e.touches[0].clientX},{passive:true});document.addEventListener("touchend",e=>{if(edgeStart!==null&&e.changedTouches[0].clientX-edgeStart>55){$("#sidebar").classList.add("open");$("#scrim").classList.add("show")}edgeStart=null},{passive:true});
