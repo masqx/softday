@@ -40,29 +40,8 @@
     height: 48px;
   }
 }
-@media screen and (max-width: 700px) {
-  .shift-form {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 16px !important;
-  }
 
-  .shift-form label {
-    display: block !important;
-    width: 100% !important;
-    min-width: 0 !important;
-    margin: 0 !important;
-  }
-
-  .shift-form input {
-    width: 100% !important;
-    max-width: 100% !important;
-    min-width: 0 !important;
-    box-sizing: border-box !important;
-    height: 48px !important;
-    font-size: 16px !important;
-  }
-}
+/* Стили типов смен из прежней версии */
 /* Типы смен и добавление смены прямо из календаря */
 .shift-type-form{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;gap:12px;align-items:end}
 .shift-type-form label,.calendar-shift-form label{display:grid;gap:8px;color:#9f8d98;font-size:10px;font-weight:700}
@@ -88,3 +67,45 @@
  .shift-row{gap:8px;padding:11px 9px}
  .shift-row strong{white-space:nowrap}
 }
+
+
+/* Время в событиях и прямоугольники в календаре — целевое обновление */
+.timed-add{display:grid;grid-template-columns:minmax(0,1fr) 104px 42px;align-items:end;gap:7px}
+.timed-add>input{width:100%;min-width:0;flex:initial}
+.time-field{display:grid;gap:5px;min-width:0;color:#ad98a4;font-size:9px;font-weight:700}
+.time-field input{width:100%;min-width:0;box-sizing:border-box;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--ink);padding:11px 7px;font:500 10px Manrope,sans-serif;outline:none}
+.time-field input:focus{border-color:#e7abc1;box-shadow:0 0 0 3px #fff0f5}
+.task-time{display:block;margin-top:4px;color:#c27b99;font-size:10px;font-weight:700}
+.calendar-cell{align-items:stretch;justify-content:flex-start;gap:3px;padding:5px 3px;overflow:hidden;vertical-align:top}
+.calendar-day-number{align-self:center;flex:0 0 auto;line-height:1.1}
+.calendar-items{display:grid;align-content:start;gap:2px;width:100%;min-width:0;overflow:hidden}
+.calendar-chip{display:block;width:100%;min-width:0;overflow:hidden;border-radius:4px;padding:2px 3px;background:#ffeaf2;color:#a74d75;text-align:left;line-height:1.05;box-sizing:border-box}
+.calendar-chip.shift{background:#f9dce8;color:#954466}
+.calendar-chip-title{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:7px;font-weight:800;line-height:1.15}
+.calendar-chip-time{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:1px;font-size:6px;font-weight:700;line-height:1.1;opacity:.85}
+.calendar-more{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center;color:#bd7192;font-size:6px;font-weight:800;line-height:1.1}
+.calendar-legend{gap:15px;flex-wrap:wrap}
+.calendar-legend span{display:flex;align-items:center;gap:6px}
+.legend-chip{display:inline-block;width:13px;height:8px;border-radius:3px;background:#ffeaf2;border:1px solid #f6d0df}
+.legend-chip.shift{background:#f9dce8}
+@media(max-width:700px){
+ .timed-add{grid-template-columns:minmax(0,1fr) 91px 38px;gap:5px}
+ .timed-add .time-field span{font-size:8px}
+ .timed-add .time-field input{padding:11px 4px;font-size:9px}
+ .calendar-cell{padding:4px 2px;gap:2px;border-radius:8px}
+ .calendar-chip{padding:2px 2px;border-radius:3px}
+ .calendar-chip-title{font-size:6.5px}
+ .calendar-chip-time{font-size:5.8px}
+ .calendar-more{font-size:5.8px}
+}
+@media(max-width:360px){
+ .timed-add{grid-template-columns:minmax(0,1fr) 82px 36px;gap:4px}
+ .calendar-cell{padding:3px 1px}
+ .calendar-chip-title{font-size:6px}
+ .calendar-chip-time{font-size:5.4px}
+}
+
+.shift-row{flex-wrap:wrap}
+.shift-time-edit{display:flex;align-items:center;gap:7px;flex:1 1 100%;font-size:9px;color:#ad98a4}
+.shift-time-edit input{width:105px;min-width:0;border:1px solid var(--line);border-radius:8px;padding:7px;background:#fff;color:var(--ink);font:500 10px Manrope,sans-serif}
+.save-shift-time{border:0;border-radius:8px;background:#ffeaf2;color:#a74d75;padding:7px 9px;font:700 9px Manrope,sans-serif;cursor:pointer}
